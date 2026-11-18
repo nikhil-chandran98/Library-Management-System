@@ -74,6 +74,13 @@ class books:
                 print("Please Enter the Details")
 
     def addBorrowHistory(self,bookID,memberID,memberName,title):
+
+        query="""SELECT * FROM BORROW_HISTORY WHERE book_id=? and member_id=?"""
+        c.execute(query,(bookID,memberID))
+        
+        if c.fetchone is not None:
+            print(f"{title} aleady Issued to {memberName}")
+            return False
         borrowDate=date.today()
         dueDate=date.today() + timedelta(days=30)
         returnDate=""
@@ -102,7 +109,7 @@ class books:
             result=c.execute(query,(newStatus,returnDate,TrackingId))
             conn.commit()
             if result:
-                print("Books return comeplete ")
+                print("Book Returned Successfully ")
                 return True
             else:
                 return False
@@ -321,7 +328,7 @@ def main():
                 newcopy=book[5]-1
             print("MEMBER DETAILS:")
             for member in memberDetails:
-                print("Memeber Name:",member[1],member[2])
+                print("Member Name:",member[1],member[2])
                 memid=member[0]
                 memname=member[1]+" "+member[2]
             if b.addBorrowHistory(bookid,memid,memname,title):
@@ -362,6 +369,7 @@ def main():
                 print("DUE DATE        :",borrowDetail[6])
                 print("RETURN DATE     :",borrowDetail[7])
                 print("STATUS          :",borrowDetail[8])
+                print("\n")
 
         elif option==8:
             print("***DELETE BOOK***") 
@@ -397,16 +405,10 @@ def main():
                 m.updateMember(memid,"PHONE",newPhone)
             else:
                 print("Invalid choice, returning to menu")
-
-
-              
+         
         elif option==10:
             break;
     
-
-        
-
-
     conn.commit()
     conn.close()
 
